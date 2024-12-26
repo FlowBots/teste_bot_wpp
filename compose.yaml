@@ -1,0 +1,14 @@
+services:
+  api-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    networks:
+      - api-bot
+
+networks:
+  api-bot:
+    name: api-bot
+    driver: bridge
