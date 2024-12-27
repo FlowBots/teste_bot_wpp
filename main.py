@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, Request
+from fastapi import FastAPI, HTTPException, Depends, Request, Query
 from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, Field, validator
 from datetime import datetime, timezone
@@ -46,7 +46,9 @@ class ScheduleMessageRequest(BaseModel):
     
     @validator("recipient")
     def validate_recipient(cls, value):
+        logging.info(f"Validando destinatário: {value}")
         if not value.startswith("+") or not value[1:].isdigit():
+            logging.error("Número de destinatário inválido.")
             raise ValueError("Número do destinatário deve estar no formato E.164 (ex: +5511999999999)")
         return value
     
@@ -70,7 +72,7 @@ def authenticate(api_key: str):
 
 # Função Simulada de Envio de Mensagem
 def send_message(job_id: str, recipient: str, message: str):
-    logging.info(f"Enviando mensagem para {recipient}: {message}")
+    logging.info(f"Iniciando envio de mensagem - Job ID: {job_id}, Destinatário: {recipient}: {message}")
 
     # Aqui integraria com a API do WhatsApp
     """
@@ -97,7 +99,7 @@ def send_message(job_id: str, recipient: str, message: str):
     try:
         response = requests.post(WHATSAPP_API_URL, json=payload, headers=headers)
         response.raise_for_status()
-        logging.info(f"Mensagem enviada com sucesso: {response.json()}")
+        logging.info(f"Mensagem enviada com sucesso para {recipient}. Resposta: {response.json()}")
     except requests.exceptions.RequestException as e:
         logging.error(f"Erro ao enviar mensagem para {recipient}: {str(e)}")
         logging.debug(f"Payload enviado: {payload}")
@@ -110,6 +112,7 @@ def schedule_message(
 ):
     try:
         schedule_id = str(uuid.uuid4())
+        logging.info(f"Agendando mensagem - ID: {schedule_id}, Destinatário: {request.recipient}, Horário: {request.send_time}")
         scheduler.add_job(
             send_message,
             trigger=DateTrigger(run_date=request.send_time),
@@ -120,6 +123,7 @@ def schedule_message(
                 "message": request.message,
             },
         )
+        logging.info(f"Mensagem agendada com sucesso - ID: {schedule_id}")
         return {
             "status": "success",
             "message": "Mensagem agendada com sucesso",
@@ -128,16 +132,52 @@ def schedule_message(
     except Exception as e:
         logging.error(f"Erro ao agendar mensagem: {str(e)}")
         raise HTTPException(status_code=500, detail="Erro ao agendar mensagem")
+    
+# Configuração de logging
+LOG_FILE = "app_logs.log"
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.FileHandler(LOG_FILE),
+        logging.StreamHandler()  # Continua exibindo no console
+    ]
+)
 
 # Logs de sucesso e erro
 @app.get("/logs", status_code=200)
-def get_logs(api_key: str = Depends(authenticate)):
-    return {"logs": "Aqui você pode retornar logs ou integrar com um sistema de monitoramento."}
+def get_logs(
+    level: str = Query("INFO", description="Nível do log (INFO, ERROR, DEBUG, etc.)"),
+    keyword: str = Query(None, description="Palavra-chave para filtrar os logs (opcional)"),
+    lines: int = Query(50, description="Número de linhas de log para retornar")
+):
+    """
+    Retorna os logs armazenados no arquivo com filtros opcionais.
+    """
+    logging.info(f"Logs acessados - Nível: {level}, Palavra-chave: {keyword}, Linhas: {lines}")
+    try:
+        with open(LOG_FILE, "r") as log_file:
+            logs = log_file.readlines()
+
+        # Filtro por nível de log
+        filtered_logs = [log for log in logs if f"- {level.upper()} -" in log]
+
+        # Filtro por palavra-chave, se especificado
+        if keyword:
+            filtered_logs = [log for log in filtered_logs if keyword in log]
+
+        # Retorna apenas as últimas `lines` linhas
+        return {"logs": filtered_logs[-lines:]}
+    except Exception as e:
+        logging.error(f"Erro ao acessar os logs: {str(e)}")
+        raise HTTPException(status_code=500, detail="Erro ao acessar os logs")
 
 # Rota para validar o Webhook no Meta
 @app.get("/webhook")
 async def validate_webhook(request: Request):
     params = request.query_params
+    logging.info(f"Webhook recebido - Parâmetros: {params}")
+
     hub_mode = params.get("hub.mode")
     hub_verify_token = params.get("hub.verify_token")
     hub_challenge = params.get("hub.challenge")
@@ -146,10 +186,14 @@ async def validate_webhook(request: Request):
     logging.info(f"Recebido: hub_mode={hub_mode}, hub_verify_token={hub_verify_token}, hub_challenge={hub_challenge}")
 
     if hub_mode == "subscribe" and hub_verify_token == VERIFY_TOKEN:
+        logging.info("Webhook validado com sucesso.")
         return PlainTextResponse(hub_challenge)  # Retorna o desafio como texto puro
-    return {"error": "Token de verificação inválido"}
+    else:
+        logging.warning("Falha ao validar o webhook. Token de verificação inválido.")
+        return {"error": "Token de verificação inválido"}
 
 # Encerramento do agendador ao finalizar o app
 @app.on_event("shutdown")
 def shutdown():
+    logging.info("Aplicação finalizando. Scheduler será desligado.")
     scheduler.shutdown()
