@@ -122,12 +122,21 @@ class ScheduleMessageRequest(BaseModel):
             raise ValueError("O horário de envio deve ser no futuro")
         
         return value  # Retorna o horário original
+    
+# Modelo de Dados para a Requisição de Mensagem Instantânea
+class InstantMessageRequest(BaseModel):
+    recipient: str = Field(..., description="Número do destinatário no formato E.164", example="+5555997013555")
+    message: str = Field(..., description="Mensagem a ser enviada")
 
-#def authenticate(api_key: str):
-#    if api_key != API_KEY:
-#        raise HTTPException(status_code=401, detail="Unauthorized")
+    @validator("recipient")
+    def validate_recipient(cls, value):
+        logging.info(f"Validando destinatário: {value}")
+        if not value.startswith("+") or not value[1:].isdigit():
+            logging.error("Número de destinatário inválido.")
+            raise ValueError("Número do destinatário deve estar no formato E.164 (ex: +5511999999999)")
+        return value
 
-# Função Simulada de Envio de Mensagem
+# Função Simulada de Envio de Mensagem Agendada
 def send_message(job_id: str, recipient: str, message: str):
     logging.info(f"Iniciando envio de mensagem - Job ID: {job_id}, Destinatário: {recipient}: {message}")
 
@@ -157,9 +166,49 @@ def send_message(job_id: str, recipient: str, message: str):
         response = requests.post(WHATSAPP_API_URL, json=payload, headers=headers)
         response.raise_for_status()
         logging.info(f"Mensagem enviada com sucesso para {recipient}. Resposta: {response.json()}")
+        return response.json()
     except requests.exceptions.RequestException as e:
         logging.error(f"Erro ao enviar mensagem para {recipient}: {str(e)}")
         logging.debug(f"Payload enviado: {payload}")
+        raise HTTPException(status_code=500, detail="Erro ao enviar a mensagem")
+    
+
+# Função Simulada de Envio de Mensagem
+def send_message_instant(recipient: str, message: str):
+    logging.info(f"Iniciando envio de mensagem para o destinatário: {recipient}: {message}")
+
+    headers = {
+        "Authorization": f"Bearer {ACCESS_TOKEN}",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "messaging_product": "whatsapp",
+        "to": recipient,
+        "type": "template",
+        "template": {
+            "name": "hello_world", "language": { "code": "en_US" }
+        }
+    }
+
+    try:
+        response = requests.post(WHATSAPP_API_URL, json=payload, headers=headers)
+        response.raise_for_status()
+        logging.info(f"Mensagem enviada com sucesso para {recipient}. Resposta: {response.json()}")
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Erro ao enviar mensagem para {recipient}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Erro ao enviar a mensagem")
+
+# Endpoint para envio instantâneo de mensagens
+@app.post("/send-message", status_code=200)
+def send_instant_message(request: InstantMessageRequest):
+    try:
+        response = send_message_instant(request.recipient, request.message)
+        logging.info(f"Mensagem enviada com sucesso para {request.recipient}. Resposta: {request.message}")
+        return {"status": "success", "response": response}
+    except Exception as e:
+        logging.error(f"Erro ao enviar mensagem instantânea: {str(e)}")
+        raise HTTPException(status_code=500, detail="Erro ao enviar mensagem instantânea")
 
 # Endpoint para agendamento
 @app.post("/schedule-message", status_code=201)
