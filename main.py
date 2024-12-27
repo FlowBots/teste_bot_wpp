@@ -12,6 +12,10 @@ import requests
 import os
 from dotenv import load_dotenv
 import certifi
+import pytz
+
+# Configurando o timezone de Brasília
+BRASILIA_TZ = pytz.timezone("America/Sao_Paulo")
 
 # Configuração de logging
 LOG_FILE = "app_logs.log"
@@ -66,17 +70,22 @@ class ScheduleMessageRequest(BaseModel):
     
     @validator("send_time")
     def validate_send_time(cls, value):
-        now = datetime.now(timezone.utc)
-        logging.info(f"Horário atual (UTC): {now}")
-        logging.info(f"Horário fornecido (UTC): {value}")
+        now = datetime.now(BRASILIA_TZ)
+        logging.info(f"Horário atual (Brasília): {now}")
+        logging.info(f"Horário fornecido (original): {value}")
         
         # Certifique-se de que o valor seja "offset-aware" (com fuso horário)
         if value.tzinfo is None or value.tzinfo.utcoffset(value) is None:
             value = value.replace(tzinfo=timezone.utc)
         
-        if value <= now:
+        # Convertendo para o fuso de Brasília
+        value_brasilia = value.astimezone(BRASILIA_TZ)
+        logging.info(f"Horário fornecido ajustado para Brasília: {value_brasilia}")
+        
+        if value_brasilia <= now:
+            logging.error("O horário de envio está no passado.")
             raise ValueError("O horário de envio deve ser no futuro")
-        return value
+        return value_brasilia
 
 def authenticate(api_key: str):
     if api_key != API_KEY:
