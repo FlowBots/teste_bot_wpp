@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.triggers.date import DateTrigger
+from apscheduler.triggers.interval import IntervalTrigger
 from typing import Dict
 import logging
 import uuid
@@ -44,6 +45,8 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 # Configurações da API do WhatsApp
 WHATSAPP_API_URL = os.getenv("WHATSAPP_API_URL")
 ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
+APP_ID = os.getenv("APP_ID")
+APP_SECRET = os.getenv("APP_SECRET")
 
 # Autenticação via API Key
 #API_KEY = os.getenv("API_KEY")
@@ -53,6 +56,39 @@ VERIFY_TOKEN = "12345"
 
 scheduler = BackgroundScheduler(jobstores={"default": SQLAlchemyJobStore(url=DATABASE_URL)})
 scheduler.start()
+
+# Função para atualizar o token de acesso
+def update_access_token():
+    global ACCESS_TOKEN
+    logging.info("Iniciando renovação do token de acesso.")
+    try:
+        url = "https://graph.facebook.com/v14.0/oauth/access_token"
+        params = {
+            "grant_type": "fb_exchange_token",
+            "client_id": APP_ID,
+            "client_secret": APP_SECRET,
+            "fb_exchange_token": ACCESS_TOKEN,
+        }
+        response = requests.get(url, params=params)
+        response.raise_for_status()
+        data = response.json()
+        ACCESS_TOKEN = data.get("access_token")
+        logging.info("Token de acesso atualizado com sucesso.")
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Erro ao renovar o token de acesso: {str(e)}")
+
+# Agendar renovação do token de acesso
+scheduler.add_job(
+    update_access_token,
+    trigger=IntervalTrigger(hours=1),  # Ajuste conforme a validade do token
+    id="update_access_token_job",
+    replace_existing=True
+)
+
+# Endpoint para verificação do token atual
+@app.get("/current-token")
+def get_current_token():
+    return {"access_token": ACCESS_TOKEN}
 
 # Modelo de Dados para a Requisição
 class ScheduleMessageRequest(BaseModel):
