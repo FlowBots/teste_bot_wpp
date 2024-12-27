@@ -19,7 +19,8 @@ uvicorn main:app --reload
 WHATSAPP_API_URL=
 ACCESS_TOKEN=
 DATABASE_URL=
-API_KEY=
+APP_ID=
+APP_SECRET=
 
 ### Rotas implementaadas
 
