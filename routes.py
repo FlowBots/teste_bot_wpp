@@ -1,19 +1,27 @@
-from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi import FastAPI, HTTPException, Depends, Request, Query
 from fastapi.responses import PlainTextResponse
-from models import ScheduleMessageRequest
-from utils import send_message
-from apscheduler.triggers.date import DateTrigger
-import uuid
-import logging
-
+from pydantic import BaseModel, Field, validator
+from datetime import datetime, timezone
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+from apscheduler.triggers.date import DateTrigger
+from typing import Dict
+import logging
+import uuid
 from dotenv import load_dotenv
+from utils import send_message
+from routes import router
+
+scheduler = BackgroundScheduler(jobstores={"default": SQLAlchemyJobStore(url=DATABASE_URL)})
+scheduler.start()
 
 router = APIRouter()
 
-@router.post("/schedule-message", status_code=201)
-def schedule_message(request: ScheduleMessageRequest):
+@app.post("/schedule-message", status_code=201)
+def schedule_message(
+    request: ScheduleMessageRequest, 
+    #api_key: str = Depends(authenticate)
+):
     try:
         schedule_id = str(uuid.uuid4())
         logging.info(f"Agendando mensagem - ID: {schedule_id}, Destinatário: {request.recipient}, Horário: {request.send_time}")
