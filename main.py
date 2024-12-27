@@ -88,12 +88,12 @@ def send_message(job_id: str, recipient: str, message: str):
     payload = {
         "messaging_product": "whatsapp",
         "to": recipient,
-        "type": "text",
-        "text": {
-            "body": message
+        "type": "template",
+        "template": {
+            "name": "hello_world", "language": { "code": "en_US" }
         }
     }
-    
+
     try:
         response = requests.post(WHATSAPP_API_URL, json=payload, headers=headers)
         response.raise_for_status()
