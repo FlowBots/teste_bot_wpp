@@ -79,13 +79,13 @@ class ScheduleMessageRequest(BaseModel):
             value = value.replace(tzinfo=timezone.utc)
         
         # Convertendo para o fuso de Brasília
-        value_brasilia = value.astimezone(BRASILIA_TZ)
-        logging.info(f"Horário fornecido ajustado para Brasília: {value_brasilia}")
+        #value_brasilia = value.astimezone(BRASILIA_TZ)
+        #logging.info(f"Horário fornecido ajustado para Brasília: {value_brasilia}")
         
-        if value_brasilia <= now:
+        if value <= now:
             logging.error("O horário de envio está no passado.")
             raise ValueError("O horário de envio deve ser no futuro")
-        return value_brasilia
+        return value
 
 def authenticate(api_key: str):
     if api_key != API_KEY:
