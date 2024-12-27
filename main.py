@@ -70,22 +70,22 @@ class ScheduleMessageRequest(BaseModel):
     
     @validator("send_time")
     def validate_send_time(cls, value):
-        now = datetime.now(BRASILIA_TZ)
-        logging.info(f"Horário atual (Brasília): {now}")
-        logging.info(f"Horário fornecido (original): {value}")
-        
-        # Certifique-se de que o valor seja "offset-aware" (com fuso horário)
+        # Obter o horário atual no fuso horário de Brasília
+        now_brasilia = datetime.now(BRASILIA_TZ)
+        logging.info(f"Horário atual (Brasília): {now_brasilia}")
+
+        # Certificar que o horário fornecido é "offset-aware" (com fuso horário)
         if value.tzinfo is None or value.tzinfo.utcoffset(value) is None:
-            value = value.replace(tzinfo=timezone.utc)
-        
-        # Convertendo para o fuso de Brasília
-        #value_brasilia = value.astimezone(BRASILIA_TZ)
-        #logging.info(f"Horário fornecido ajustado para Brasília: {value_brasilia}")
-        
-        if value <= now:
+            value = BRASILIA_TZ.localize(value)
+
+        logging.info(f"Horário fornecido 'offset-aware': {value}")
+
+        # Comparar o horário ajustado com o horário atual de Brasília
+        if value <= now_brasilia:
             logging.error("O horário de envio está no passado.")
             raise ValueError("O horário de envio deve ser no futuro")
-        return value
+        
+        return value  # Retorna o horário original
 
 def authenticate(api_key: str):
     if api_key != API_KEY:
@@ -144,7 +144,7 @@ def schedule_message(
                 "message": request.message,
             },
         )
-        logging.info(f"Mensagem agendada com sucesso - ID: {schedule_id}")
+        logging.info(f"Mensagem agendada com sucesso - ID: {schedule_id} HORÁRIO: {request.send_time}")
         return {
             "status": "success",
             "message": "Mensagem agendada com sucesso",
