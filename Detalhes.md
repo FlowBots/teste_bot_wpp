@@ -1,13 +1,15 @@
-### Instalar as bibliotecas
-
-pip install fastapi uvicorn apscheduler sqlalchemy pydantic python-dotenv requests
-
-
-### Executar serviço
+### Criar ambiente
 python -m venv venv
 
 source venv/bin/activate  # Linux/Mac
 venv\Scripts\activate     # Windows
+
+
+### Instalar as bibliotecas
+
+pip install fastapi uvicorn apscheduler sqlalchemy pydantic python-dotenv requests
+
+### Executar serviço
 
 uvicorn main:app --reload
 
