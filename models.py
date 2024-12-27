@@ -2,6 +2,10 @@ from pydantic import BaseModel, Field, validator
 from datetime import datetime, timezone
 import logging
 
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+from dotenv import load_dotenv
+
 class ScheduleMessageRequest(BaseModel):
     recipient: str = Field(..., description="Número do destinatário no formato E.164", example="+5511999999999")
     message: str = Field(..., description="Mensagem a ser enviada")

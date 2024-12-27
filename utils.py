@@ -2,6 +2,10 @@ import logging
 import requests
 import os
 
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+from dotenv import load_dotenv
+
 ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
 WHATSAPP_API_URL = os.getenv("WHATSAPP_API_URL")
 
