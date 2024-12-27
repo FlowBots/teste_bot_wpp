@@ -46,7 +46,7 @@ WHATSAPP_API_URL = os.getenv("WHATSAPP_API_URL")
 ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
 
 # Autenticação via API Key
-API_KEY = os.getenv("API_KEY")
+#API_KEY = os.getenv("API_KEY")
 
 # Token de verificação fornecido no Meta Developers
 VERIFY_TOKEN = "12345"
@@ -87,9 +87,9 @@ class ScheduleMessageRequest(BaseModel):
         
         return value  # Retorna o horário original
 
-def authenticate(api_key: str):
-    if api_key != API_KEY:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+#def authenticate(api_key: str):
+#    if api_key != API_KEY:
+#        raise HTTPException(status_code=401, detail="Unauthorized")
 
 # Função Simulada de Envio de Mensagem
 def send_message(job_id: str, recipient: str, message: str):
