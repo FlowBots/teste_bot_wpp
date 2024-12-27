@@ -56,9 +56,9 @@ scheduler.start()
 
 # Modelo de Dados para a Requisição
 class ScheduleMessageRequest(BaseModel):
-    recipient: str = Field(..., description="Número do destinatário no formato E.164", example="+5511999999999")
+    recipient: str = Field(..., description="Número do destinatário no formato E.164", example="+5555997013555")
     message: str = Field(..., description="Mensagem a ser enviada")
-    send_time: datetime = Field(..., description="Data e hora do envio no formato ISO 8601", example="2024-12-25T15:30:00")
+    send_time: datetime = Field(..., description="Data e hora do envio no formato ISO 8601", example="2024-12-27T15:30:00")
     
     @validator("recipient")
     def validate_recipient(cls, value):
