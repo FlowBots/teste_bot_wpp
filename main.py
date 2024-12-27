@@ -100,6 +100,7 @@ def send_message(job_id: str, recipient: str, message: str):
         logging.info(f"Mensagem enviada com sucesso: {response.json()}")
     except requests.exceptions.RequestException as e:
         logging.error(f"Erro ao enviar mensagem para {recipient}: {str(e)}")
+        logging.debug(f"Payload enviado: {payload}")
 
 # Endpoint para agendamento
 @app.post("/schedule-message", status_code=201)
