@@ -13,6 +13,18 @@ import os
 from dotenv import load_dotenv
 import certifi
 
+# Configuração de logging
+LOG_FILE = "app_logs.log"
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.FileHandler(LOG_FILE),
+        logging.StreamHandler()  # Continua exibindo no console
+    ]
+)
+logging.info("Servidor iniciado e logging configurado.")
+
 os.environ["REQUESTS_CA_BUNDLE"] = certifi.where()
 
 # Carregar variáveis de ambiente
@@ -132,17 +144,6 @@ def schedule_message(
     except Exception as e:
         logging.error(f"Erro ao agendar mensagem: {str(e)}")
         raise HTTPException(status_code=500, detail="Erro ao agendar mensagem")
-    
-# Configuração de logging
-LOG_FILE = "app_logs.log"
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.FileHandler(LOG_FILE),
-        logging.StreamHandler()  # Continua exibindo no console
-    ]
-)
 
 # Logs de sucesso e erro
 @app.get("/logs", status_code=200)
