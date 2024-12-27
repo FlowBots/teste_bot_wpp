@@ -1,0 +1,21 @@
+from pydantic import BaseModel, Field, validator
+from datetime import datetime, timezone
+import logging
+
+class ScheduleMessageRequest(BaseModel):
+    recipient: str = Field(..., description="Número do destinatário no formato E.164", example="+5511999999999")
+    message: str = Field(..., description="Mensagem a ser enviada")
+    send_time: datetime = Field(..., description="Data e hora do envio no formato ISO 8601", example="2024-12-25T15:30:00")
+
+    @validator("recipient")
+    def validate_recipient(cls, value):
+        if not value.startswith("+") or not value[1:].isdigit():
+            raise ValueError("Número do destinatário deve estar no formato E.164")
+        return value
+
+    @validator("send_time")
+    def validate_send_time(cls, value):
+        now = datetime.now(timezone.utc)
+        if value <= now:
+            raise ValueError("O horário de envio deve ser no futuro")
+        return value
