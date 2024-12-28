@@ -127,6 +127,12 @@ celerybeat.pid
 # SageMath parsed files
 *.sage.py
 
+#terrafom
+terraform.tfvars
+ssh_key.pub
+
+
+
 # Environments
 .env
 .venv
