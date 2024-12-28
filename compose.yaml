@@ -1,6 +1,6 @@
 services:
   api-bot:
-    image: joaoprado/bot-whatsapp:latest
+    image: joaoprdo/bot-whatsapp:latest
     #build:
     #  context: .
     #  dockerfile: Dockerfile

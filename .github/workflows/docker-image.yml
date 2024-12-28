@@ -8,7 +8,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-and-deploy:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
@@ -33,3 +33,19 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/bot-whatsapp:latest
             ${{ secrets.DOCKER_USERNAME }}/bot-whatsapp:${{ github.run_number }}-${{ github.sha }}
+  deploy-to-droplet:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+
+    steps:
+      # Step 1: Deploy usando a ação ssh-docker-compose
+      - name: SSH Deploy with Docker Compose
+        uses: djnotes/github-action-ssh-docker-compose@v2.0.1
+        with:
+          ssh_private_key: ${{ secrets.DO_SSH_PRIVATE_KEY }}
+          ssh_host: ${{ secrets.DO_DROPLET_IP }}
+          ssh_port: 22 # Default, altere se necessário
+          ssh_user: root # Ou o usuário configurado no Droplet
+          docker_compose_filename: app/compose.yml # Caminho para o arquivo no Droplet
+          #docker_compose_prefix: bot-whatsapp # Prefixo opcional para o Compose
+          docker_compose_down: true # Se desejar parar os contêineres antes de recriá-los
