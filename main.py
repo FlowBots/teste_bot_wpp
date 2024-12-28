@@ -55,7 +55,6 @@ VERIFY_TOKEN = "12345"
 if not all([ACCESS_TOKEN, APP_ID, VERIFY_TOKEN]):
     raise ValueError("Variáveis de ambiente não configuradas corretamente.")
 
-
 scheduler = BackgroundScheduler(
     jobstores={"default": SQLAlchemyJobStore(url=DATABASE_URL)}
 )
@@ -259,7 +258,111 @@ async def send_message_route(to: str, message: str):
         return {"status": "error", "message": str(e)}
 
 
-# Rota para validar o webhook no Meta (necessário ao configurar o webhook)
+# Endpoint para verificação do token atual
+@app.get("/current-token")
+def get_current_token():
+    return {"access_token": ACCESS_TOKEN}
+
+
+# Endpoint para pegar tempo de expiração do token
+@app.get("/expiration-time")
+def expiration_time():
+    expiration_time = get_expiration_time()
+    return {"expiration_time": expiration_time}
+
+
+# Endpoint para renovar o token de acesso
+@app.get("/update-token")
+def update_token():
+    global ACCESS_TOKEN
+    update_access_token()
+    return {"access_token": ACCESS_TOKEN}
+
+
+# Endpoint para envio instantâneo de mensagens
+@app.post("/send-message", status_code=200)
+def send_instant_message(request: InstantMessageRequest):
+    try:
+        response = send_message_instant(request.recipient, request.message)
+        logging.info(
+            f"Mensagem enviada com sucesso para {request.recipient}. Resposta: {request.message}"
+        )
+        return {"status": "success", "response": response}
+    except Exception as e:
+        logging.error(f"Erro ao enviar mensagem instantânea: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail="Erro ao enviar mensagem instantânea"
+        )
+
+
+# Endpoint para agendamento
+@app.post("/schedule-message", status_code=201)
+def schedule_message(
+    request: ScheduleMessageRequest,
+    # api_key: str = Depends(authenticate)
+):
+    try:
+        schedule_id = str(uuid.uuid4())
+        logging.info(
+            f"Agendando mensagem - ID: {schedule_id}, Destinatário: {request.recipient}, Horário: {request.send_time}"
+        )
+        scheduler.add_job(
+            send_message,
+            trigger=DateTrigger(run_date=request.send_time),
+            id=schedule_id,
+            kwargs={
+                "job_id": schedule_id,
+                "recipient": request.recipient,
+                "message": request.message,
+            },
+        )
+        logging.info(
+            f"Mensagem agendada com sucesso - ID: {schedule_id} HORÁRIO: {request.send_time}"
+        )
+        return {
+            "status": "success",
+            "message": "Mensagem agendada com sucesso",
+            "schedule_id": schedule_id,
+        }
+    except Exception as e:
+        logging.error(f"Erro ao agendar mensagem: {str(e)}")
+        raise HTTPException(status_code=500, detail="Erro ao agendar mensagem")
+
+
+# Logs de sucesso e erro
+@app.get("/logs", status_code=200)
+def get_logs(
+    level: str = Query("INFO", description="Nível do log (INFO, ERROR, DEBUG, etc.)"),
+    keyword: str = Query(
+        None, description="Palavra-chave para filtrar os logs (opcional)"
+    ),
+    lines: int = Query(50, description="Número de linhas de log para retornar"),
+):
+    """
+    Retorna os logs armazenados no arquivo com filtros opcionais.
+    """
+    logging.info(
+        f"Logs acessados - Nível: {level}, Palavra-chave: {keyword}, Linhas: {lines}"
+    )
+    try:
+        with open(LOG_FILE, "r") as log_file:
+            logs = log_file.readlines()
+
+        # Filtro por nível de log
+        filtered_logs = [log for log in logs if f"- {level.upper()} -" in log]
+
+        # Filtro por palavra-chave, se especificado
+        if keyword:
+            filtered_logs = [log for log in filtered_logs if keyword in log]
+
+        # Retorna apenas as últimas `lines` linhas
+        return {"logs": filtered_logs[-lines:]}
+    except Exception as e:
+        logging.error(f"Erro ao acessar os logs: {str(e)}")
+        raise HTTPException(status_code=500, detail="Erro ao acessar os logs")
+
+
+# Rota para validar o Webhook no Meta
 @app.get("/webhook")
 async def validate_webhook(request: Request):
     params = request.query_params
@@ -277,4 +380,13 @@ async def validate_webhook(request: Request):
     if hub_mode == "subscribe" and hub_verify_token == VERIFY_TOKEN:
         logging.info("Webhook validado com sucesso.")
         return PlainTextResponse(hub_challenge)  # Retorna o desafio como texto puro
-    return {"error": "Token de verificação inválido"}
+    else:
+        logging.warning("Falha ao validar o webhook. Token de verificação inválido.")
+        return {"error": "Token de verificação inválido"}
+
+
+# Encerramento do agendador ao finalizar o app
+@app.on_event("shutdown")
+def shutdown():
+    logging.info("Aplicação finalizando. Scheduler será desligado.")
+    scheduler.shutdown()
