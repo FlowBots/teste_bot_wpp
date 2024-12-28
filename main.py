@@ -220,7 +220,7 @@ def send_message2(to, message):
         print(f"Erro ao enviar mensagem: {response.text}")
 
 @app.post("/webhooksend-message")
-def send_message_route(to: str, message: str):
+async def send_message_route(to: str, message: str):
     try:
         send_message2(to, message)
         return {"status": "success", "message": f"Mensagem enviada para {to}"}
