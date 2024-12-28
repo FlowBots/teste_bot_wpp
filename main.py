@@ -49,7 +49,7 @@ APP_ID = os.getenv("APP_ID")
 APP_SECRET = os.getenv("APP_SECRET")
 
 # Token de verificação fornecido no Meta Developers
-VERIFY_TOKEN = "12345"
+VERIFY_TOKEN = os.getenv("VERIFY_TOKEN")
 
 # Verificação para garantir que as variáveis estão configuradas
 if not all([ACCESS_TOKEN, APP_ID, VERIFY_TOKEN]):
