@@ -204,7 +204,7 @@ def send_message_instant(recipient: str, message: str):
         logging.error(f"Erro ao enviar mensagem para {recipient}: {str(e)}")
         raise HTTPException(status_code=500, detail="Erro ao enviar a mensagem")
 
-def send_message2(to, message):
+def send_message_v_joao(to, message):
     url = WHATSAPP_API_URL
     headers = {
         "Authorization": f"Bearer {ACCESS_TOKEN}",
@@ -219,10 +219,10 @@ def send_message2(to, message):
     if response.status_code != 200:
         print(f"Erro ao enviar mensagem: {response.text}")
 
-@app.post("/webhooksend-message")
+@app.post("/send-message-v-joao")
 async def send_message_route(to: str, message: str):
     try:
-        send_message2(to, message)
+        send_message_v_joao(to, message)
         return {"status": "success", "message": f"Mensagem enviada para {to}"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
