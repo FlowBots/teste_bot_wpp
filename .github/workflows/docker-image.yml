@@ -46,6 +46,6 @@ jobs:
           ssh_host: ${{ secrets.DO_DROPLET_IP }}
           ssh_port: 22 # Default, altere se necessário
           ssh_user: root # Ou o usuário configurado no Droplet
-          docker_compose_filename: app/compose.yml # Caminho para o arquivo no Droplet
+          docker_compose_filename: app/compose.yaml # Caminho para o arquivo no Droplet
           #docker_compose_prefix: bot-whatsapp # Prefixo opcional para o Compose
           docker_compose_down: true # Se desejar parar os contêineres antes de recriá-los
