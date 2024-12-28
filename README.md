@@ -6,6 +6,7 @@ Bem-vindo ao projeto **Teste Bot WhatsApp**! Este repositório contém o código
 
 - [Links Úteis](#-links-%C3%BAteis)
 - [TO-DO](#-to-do)
+- [Comandos Git Flow](#comandos-git-flow)
 - [Principais Recursos](#-principais-recursos)
 - [Tecnologias Utilizadas](#%EF%B8%8F-tecnologias-utilizadas)
 - [Estrutura do Projeto](#-estrutura-do-projeto)
@@ -28,6 +29,48 @@ Bem-vindo ao projeto **Teste Bot WhatsApp**! Este repositório contém o código
 - [ ] Criar uma interface web para visualização de mensagens.
 - [ ] Adicionar suporte a mensagens multimídia (imagens, áudios, etc.).
 - [ ] Melhorar a documentação com exemplos práticos de uso.
+
+## 🔀 Comandos Git Flow
+
+Aqui estão os principais comandos para trabalhar com **Git Flow**:
+
+### Inicializar Git Flow no Projeto
+```bash
+git flow init
+```
+
+### Criar uma Nova Feature
+```bash
+git flow feature start <nome-da-feature>
+```
+
+### Finalizar uma Feature
+```bash
+git flow feature finish <nome-da-feature>
+```
+
+### Criar uma Nova Release
+```bash
+git flow release start <versao-da-release>
+```
+
+### Finalizar uma Release
+```bash
+git flow release finish <versao-da-release>
+```
+
+### Criar um Hotfix
+```bash
+git flow hotfix start <nome-do-hotfix>
+```
+
+### Finalizar um Hotfix
+```bash
+git flow hotfix finish <nome-do-hotfix>
+```
+
+Esses comandos ajudam a organizar o desenvolvimento do projeto de forma estruturada, com ramificações para funcionalidades, correções e lançamentos.
+
 
 
 ## 💡 Principais Recursos
