@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - develop # Altere para o branch que desejar monitorar
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   build-and-push:
