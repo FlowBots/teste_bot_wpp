@@ -33,3 +33,7 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/bot-whatsapp:latest
             ${{ secrets.DOCKER_USERNAME }}/bot-whatsapp:${{ github.run_number }}-${{ github.sha }}
+          build-args: |
+            TOKEN_META=${{ secrets.TOKEN_META }}
+            PHONE_NUMBER_ID=${{ secrets.PHONE_NUMBER_ID }}
+            VERIFY_TOKEN=${{ secrets.VERIFY_TOKEN }}

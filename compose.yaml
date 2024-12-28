@@ -1,11 +1,18 @@
 services:
   api-bot:
-    image: joaoprdo/bot-whatsapp:latest
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        TOKEN_META: ${TOKEN_META}
+        PHONE_NUMBER_ID: ${PHONE_NUMBER_ID}
+        VERIFY_TOKEN: ${VERIFY_TOKEN}
     ports:
       - "8000:8000"
+    environment:
+      TOKEN_META: ${TOKEN_META}
+      PHONE_NUMBER_ID: ${PHONE_NUMBER_ID}
+      VERIFY_TOKEN: ${VERIFY_TOKEN}
     networks:
       - api-bot
 
