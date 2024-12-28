@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.triggers.date import DateTrigger
+from apscheduler.triggers.interval import IntervalTrigger
 from typing import Dict
 import logging
 import uuid
@@ -44,15 +45,55 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 # Configurações da API do WhatsApp
 WHATSAPP_API_URL = os.getenv("WHATSAPP_API_URL")
 ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
-
-# Autenticação via API Key
-#API_KEY = os.getenv("API_KEY")
+APP_ID = os.getenv("APP_ID")
+APP_SECRET = os.getenv("APP_SECRET")
 
 # Token de verificação fornecido no Meta Developers
 VERIFY_TOKEN = "12345"
 
 scheduler = BackgroundScheduler(jobstores={"default": SQLAlchemyJobStore(url=DATABASE_URL)})
 scheduler.start()
+
+# Função para atualizar o token de acesso
+def update_access_token():
+    global ACCESS_TOKEN
+    logging.info("Iniciando renovação do token de acesso.")
+    try:
+        url = "https://graph.facebook.com/v14.0/oauth/access_token"
+        params = {
+            "grant_type": "fb_exchange_token",
+            "client_id": APP_ID,
+            "client_secret": APP_SECRET,
+            "fb_exchange_token": ACCESS_TOKEN,
+        }
+        response = requests.get(url, params=params)
+        response.raise_for_status()
+        data = response.json()
+        ACCESS_TOKEN = data.get("access_token")
+        logging.info("Token de acesso atualizado com sucesso.")
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Erro ao renovar o token de acesso: {str(e)}")
+
+def get_expiration_time():
+    url = "https://graph.facebook.com/v14.0/oauth/access_token"
+    params = {
+        "grant_type": "fb_exchange_token",
+        "client_id": APP_ID,
+        "client_secret": APP_SECRET,
+        "fb_exchange_token": ACCESS_TOKEN,
+    }
+    response = requests.get(url, params=params)
+    response.raise_for_status()
+    data = response.json()
+    return data.get("expires_in")
+
+# Agendar renovação do token de acesso
+scheduler.add_job(
+    update_access_token,
+    trigger=IntervalTrigger(hours=1),  # Ajuste conforme a validade do token
+    id="update_access_token_job",
+    replace_existing=True
+)
 
 # Modelo de Dados para a Requisição
 class ScheduleMessageRequest(BaseModel):
@@ -86,12 +127,21 @@ class ScheduleMessageRequest(BaseModel):
             raise ValueError("O horário de envio deve ser no futuro")
         
         return value  # Retorna o horário original
+    
+# Modelo de Dados para a Requisição de Mensagem Instantânea
+class InstantMessageRequest(BaseModel):
+    recipient: str = Field(..., description="Número do destinatário no formato E.164", example="+5555997013555")
+    message: str = Field(..., description="Mensagem a ser enviada")
 
-#def authenticate(api_key: str):
-#    if api_key != API_KEY:
-#        raise HTTPException(status_code=401, detail="Unauthorized")
+    @validator("recipient")
+    def validate_recipient(cls, value):
+        logging.info(f"Validando destinatário: {value}")
+        if not value.startswith("+") or not value[1:].isdigit():
+            logging.error("Número de destinatário inválido.")
+            raise ValueError("Número do destinatário deve estar no formato E.164 (ex: +5511999999999)")
+        return value
 
-# Função Simulada de Envio de Mensagem
+# Função Simulada de Envio de Mensagem Agendada
 def send_message(job_id: str, recipient: str, message: str):
     logging.info(f"Iniciando envio de mensagem - Job ID: {job_id}, Destinatário: {recipient}: {message}")
 
@@ -121,9 +171,67 @@ def send_message(job_id: str, recipient: str, message: str):
         response = requests.post(WHATSAPP_API_URL, json=payload, headers=headers)
         response.raise_for_status()
         logging.info(f"Mensagem enviada com sucesso para {recipient}. Resposta: {response.json()}")
+        return response.json()
     except requests.exceptions.RequestException as e:
         logging.error(f"Erro ao enviar mensagem para {recipient}: {str(e)}")
         logging.debug(f"Payload enviado: {payload}")
+        raise HTTPException(status_code=500, detail="Erro ao enviar a mensagem")
+    
+
+# Função Simulada de Envio de Mensagem
+def send_message_instant(recipient: str, message: str):
+    logging.info(f"Iniciando envio de mensagem para o destinatário: {recipient}: {message}")
+
+    headers = {
+        "Authorization": f"Bearer {ACCESS_TOKEN}",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "messaging_product": "whatsapp",
+        "to": recipient,
+        "type": "template",
+        "template": {
+            "name": "hello_world", "language": { "code": "en_US" }
+        }
+    }
+
+    try:
+        response = requests.post(WHATSAPP_API_URL, json=payload, headers=headers)
+        response.raise_for_status()
+        logging.info(f"Mensagem enviada com sucesso para {recipient}. Resposta: {response.json()}")
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Erro ao enviar mensagem para {recipient}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Erro ao enviar a mensagem")
+
+# Endpoint para verificação do token atual
+@app.get("/current-token")
+def get_current_token():
+    return {"access_token": ACCESS_TOKEN}
+
+# Endpoint para pegar tempo de expiração do token
+@app.get("/expiration-time")
+def expiration_time():
+    expiration_time = get_expiration_time()
+    return {"expiration_time": expiration_time}
+
+# Endpoint para renovar o token de acesso
+@app.get("/update-token")
+def update_token():
+    global ACCESS_TOKEN
+    update_access_token()    
+    return {"access_token": ACCESS_TOKEN}
+
+# Endpoint para envio instantâneo de mensagens
+@app.post("/send-message", status_code=200)
+def send_instant_message(request: InstantMessageRequest):
+    try:
+        response = send_message_instant(request.recipient, request.message)
+        logging.info(f"Mensagem enviada com sucesso para {request.recipient}. Resposta: {request.message}")
+        return {"status": "success", "response": response}
+    except Exception as e:
+        logging.error(f"Erro ao enviar mensagem instantânea: {str(e)}")
+        raise HTTPException(status_code=500, detail="Erro ao enviar mensagem instantânea")
 
 # Endpoint para agendamento
 @app.post("/schedule-message", status_code=201)
