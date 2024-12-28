@@ -6,10 +6,8 @@ services:
     #  dockerfile: Dockerfile
     ports:
       - "8000:8000"
-    environment:
-      TOKEN_META: ${TOKEN_META}
-      PHONE_NUMBER_ID: ${PHONE_NUMBER_ID}
-      VERIFY_TOKEN: ${VERIFY_TOKEN}
+    env_file:
+      - .env # Aponta para o arquivo .env
     networks:
       - api-bot
 
