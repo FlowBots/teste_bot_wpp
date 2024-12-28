@@ -204,6 +204,29 @@ def send_message_instant(recipient: str, message: str):
         logging.error(f"Erro ao enviar mensagem para {recipient}: {str(e)}")
         raise HTTPException(status_code=500, detail="Erro ao enviar a mensagem")
 
+def send_message2(to, message):
+    url = WHATSAPP_API_URL
+    headers = {
+        "Authorization": f"Bearer {ACCESS_TOKEN}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "messaging_product": "whatsapp",
+        "to": to,
+        "text": {"body": message}
+    }
+    response = requests.post(url, json=payload, headers=headers)
+    if response.status_code != 200:
+        print(f"Erro ao enviar mensagem: {response.text}")
+
+@app.post("/webhooksend-message")
+def send_message_route(to: str, message: str):
+    try:
+        send_message2(to, message)
+        return {"status": "success", "message": f"Mensagem enviada para {to}"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 # Endpoint para verificação do token atual
 @app.get("/current-token")
 def get_current_token():
