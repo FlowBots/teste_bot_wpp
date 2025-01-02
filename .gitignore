@@ -1,3 +1,5 @@
+jobs.DATABASE_URL
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -126,6 +128,21 @@ celerybeat.pid
 
 # SageMath parsed files
 *.sage.py
+
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+terraform.tfvars
+
+# Chaves SSH
+*.pub
+*.pem
+
+# Logs e arquivos temporários
+*.log
+*.tmp
 
 # Environments
 .env

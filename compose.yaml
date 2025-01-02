@@ -1,10 +1,13 @@
 services:
   api-bot:
+    #image: joaoprdo/bot-whatsapp:latest
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
+    env_file:
+      - .env # Aponta para o arquivo .env
     networks:
       - api-bot
 
