@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from app.models import InstantMessageRequest
+from app.models.InstantMessageRequest import InstantMessageRequest
 from app.services.send_message_template import send_message_template
 import logging
 

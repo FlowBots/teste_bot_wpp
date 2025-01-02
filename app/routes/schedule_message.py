@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from app.models import ScheduleMessageRequest
+from app.models.ScheduleMessageRequest import ScheduleMessageRequest
 from app.services.send_message_scheduled import send_message_scheduled
 from apscheduler.triggers.date import DateTrigger
 from app.scheduler import scheduler
