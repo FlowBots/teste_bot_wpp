@@ -207,6 +207,36 @@ def send_message(job_id: str, recipient: str, message: str):
         raise HTTPException(status_code=500, detail="Erro ao enviar a mensagem")
 
 
+# Função Simulada de Envio de Mensagem - Template
+def send_message_template(recipient: str, message: str):
+    logging.info(
+        f"Iniciando envio de mensagem para o destinatário: {recipient}: {message}"
+    )
+
+    headers = {
+        "Authorization": f"Bearer {ACCESS_TOKEN}",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "messaging_product": "whatsapp",
+        "to": recipient,
+        "type": "template",
+        "template": {
+            "name": "hello_world", "language": { "code": "en_US" }
+        }
+    }
+
+    try:
+        response = requests.post(WHATSAPP_API_URL, json=payload, headers=headers)
+        response.raise_for_status()
+        logging.info(
+            f"Mensagem enviada com sucesso para {recipient}. Resposta: {response.json()}"
+        )
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Erro ao enviar mensagem para {recipient}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Erro ao enviar a mensagem")
+
 # Função Simulada de Envio de Mensagem
 def send_message_instant(recipient: str, message: str):
     logging.info(
@@ -261,6 +291,21 @@ def update_token():
 def send_instant_message(request: InstantMessageRequest):
     try:
         response = send_message_instant(request.recipient, request.message)
+        logging.info(
+            f"Mensagem enviada com sucesso para {request.recipient}. Resposta: {request.message}"
+        )
+        return {"status": "success", "response": response}
+    except Exception as e:
+        logging.error(f"Erro ao enviar mensagem instantânea: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail="Erro ao enviar mensagem instantânea"
+        )
+
+# Endpoint para envio instantâneo de mensagens - Template
+@app.post("/send-message-template", status_code=200)
+def send_instant_message_template(request: InstantMessageRequest):
+    try:
+        response = send_message_template(request.recipient, request.message)
         logging.info(
             f"Mensagem enviada com sucesso para {request.recipient}. Resposta: {request.message}"
         )
