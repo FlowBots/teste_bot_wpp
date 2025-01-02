@@ -412,3 +412,4 @@ async def validate_webhook(request: Request):
 def shutdown():
     logging.info("Aplicação finalizando. Scheduler será desligado.")
     scheduler.shutdown()
+
