@@ -28,7 +28,3 @@ def send_message_instant(recipient: str, message: str):
     except requests.exceptions.RequestException as e:
         logging.error(f"Erro ao enviar mensagem para {recipient}: {str(e)}")
         raise HTTPException(status_code=500, detail="Erro ao enviar a mensagem")
-
-def renew_access_token():
-    logging.info("Iniciando renovação do token de acesso.")
-    # (Lógica de renovação do token com logs)

@@ -1,14 +1,14 @@
 from fastapi import APIRouter, HTTPException
-from app.models import InstantMessageRequest, ScheduleMessageRequest
-from app.services import send_message_instant
+from app.models import InstantMessageRequest
+from app.services.send_message_template import send_message_template
 import logging
 
 router = APIRouter()
 
-@router.post("/send-message")
-def send_instant_message(request: InstantMessageRequest):
+@router.post("/send-message-template")
+def send_instant_message_template(request: InstantMessageRequest):
     try:
-        response = send_message_instant(request.recipient, request.message)
+        response = send_message_template(request.recipient, request.message)
         logging.info(
             f"Mensagem enviada com sucesso para {request.recipient}. Resposta: {request.message}"
         )
