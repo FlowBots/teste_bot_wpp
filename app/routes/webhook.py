@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import PlainTextResponse
 from app.config import VERIFY_TOKEN
+import logging
+import requests
 
 router = APIRouter()
 
