@@ -6,7 +6,7 @@ router = APIRouter()
 
 @router.delete("/scheduled-messages/{schedule_id}", status_code=200, tags=["Messages"],
     summary="Deletar mensagem agendada",
-    description="Faz a exclusão de mensagem agendada",)
+    description="Permitir o cancelamento de mensagens que ainda não foram enviadas.",)
 def cancel_scheduled_message(schedule_id: str):
     """
     Cancela uma mensagem agendada pelo ID.
