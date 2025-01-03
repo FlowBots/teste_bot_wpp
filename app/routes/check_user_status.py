@@ -1,10 +1,11 @@
+# NÃO CONSEGUI VERIFICAR O FUNCIONAMENTO DESSE ENDPOINT
+
 from fastapi import APIRouter, HTTPException
 import requests
 from app.config import WHATSAPP_API_URL, ACCESS_TOKEN
 import logging
 
 router = APIRouter()
-# NÃO CONSEGUI VERIFICAR O FUNCIONAMENTO DESSE ENDPOINT
 @router.get("/users/{phone_number}/status", status_code=200)
 def check_user_status(phone_number: str):
     """
