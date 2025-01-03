@@ -5,11 +5,11 @@ from app.routes import manage_templates, list_templates, cancel_scheduled_messag
 app = FastAPI(title="Chatbot WhatsApp Scheduler")
 
 # Incluindo rotas
-#app.include_router(manage_templates.router)
-#app.include_router(list_templates.router)
+#app.include_router(manage_templates.router) # NÃO CONSEGUI VERIFICAR O FUNCIONAMENTO DESSE ENDPOINT
+#app.include_router(list_templates.router) # NÃO CONSEGUI VERIFICAR O FUNCIONAMENTO DESSE ENDPOINT
 app.include_router(cancel_scheduled_message.router)
 app.include_router(list_scheduled_messages.router)
-#app.include_router(check_user_status.router)
+#app.include_router(check_user_status.router) # NÃO CONSEGUI VERIFICAR O FUNCIONAMENTO DESSE ENDPOINT
 app.include_router(current_token.router)
 app.include_router(expiration_time.router)
 app.include_router(logs.router)
