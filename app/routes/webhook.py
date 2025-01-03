@@ -6,7 +6,9 @@ import requests
 
 router = APIRouter()
 
-@router.get("/webhook")
+@router.get("/webhook", tags=["Meta"],
+    summary="Verificação de Token interno",
+    description="Retorna os os parâmetros necessários para utilização da API da Meta.",)
 async def validate_webhook(request: Request):
     params = request.query_params
     logging.info(f"Webhook recebido - Parâmetros: {params}")

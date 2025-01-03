@@ -4,7 +4,9 @@ import logging
 
 router = APIRouter()
 
-@router.get("/scheduled-messages", status_code=200)
+@router.get("/scheduled-messages", status_code=200, tags=["Messages"],
+    summary="Listar mensagens agendadas",
+    description="Retorna lista de mensagens agendadas",)
 def list_scheduled_messages():
     """
     Lista todas as mensagens agendadas no sistema.
