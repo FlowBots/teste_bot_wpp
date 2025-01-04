@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 from app.scheduler import shutdown_scheduler
-from app.routes import schedule_recurring, send_bulk_messages, manage_templates, list_templates, cancel_scheduled_message, list_scheduled_messages, check_user_status, webhook, send_template_message, logs, schedule_message, send_instant_message, update_token, current_token, expiration_time
+from app.routes.meta import webhook, update_token, expiration_time, current_token
+from app.routes.messages import schedule_message, cancel_scheduled_message, list_scheduled_messages, schedule_recurring, send_bulk_messages, send_instant_message, send_template_message
+from app.routes.logs import logs
+
+from app.routes import manage_templates, list_templates, check_user_status # ROTAS em desenvolvimento
 
 app = FastAPI(title="Chatbot WhatsApp Scheduler")
 
