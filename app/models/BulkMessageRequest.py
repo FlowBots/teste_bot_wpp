@@ -7,7 +7,7 @@ class BulkMessageRequest(BaseModel):
     recipients: List[str] = Field(
         ...,
         description="Lista de números de telefone no formato E.164",
-        example=["+5511999999999", "+5511988888888"]
+        example=["+5555997013555", "+5555997013555", "+5555996884436", "+5555997013555"]
     )
     message: str = Field(
         ...,

@@ -10,7 +10,7 @@ router = APIRouter()
 
 @router.post("/messages/bulk", status_code=200, tags=["Messages"],
     summary="Envio de mensagem em massa",
-    description="Envia mensagens em massa para múltiplos destinatários.",))
+    description="Envia mensagens em massa para múltiplos destinatários.")
 def send_bulk_messages(request: BulkMessageRequest):
     """
     Envia mensagens em massa para múltiplos destinatários.
