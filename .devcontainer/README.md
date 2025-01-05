@@ -1,3 +1,4 @@
+Ele nao acessa por 0.0.0.0, tem que ser localhost, e se sair da execução direta da API vai ter que rodar `poetry shell` e `uvicorn main:app --port 8000 --reload` para rodar a API novamente.
 
 
 ### Acessando o ambiente de desenvolvimento com Devcontainers
