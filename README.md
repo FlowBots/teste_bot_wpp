@@ -49,25 +49,6 @@ git flow feature start <nome-da-feature>
 git flow feature finish <nome-da-feature>
 ```
 
-### Criar uma Nova Release
-```bash
-git flow release start <versao-da-release>
-```
-
-### Finalizar uma Release
-```bash
-git flow release finish <versao-da-release>
-```
-
-### Criar um Hotfix
-```bash
-git flow hotfix start <nome-do-hotfix>
-```
-
-### Finalizar um Hotfix
-```bash
-git flow hotfix finish <nome-do-hotfix>
-```
 
 Esses comandos ajudam a organizar o desenvolvimento do projeto de forma estruturada, com ramificações para funcionalidades, correções e lançamentos.
 

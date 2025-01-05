@@ -1,0 +1,17 @@
+# Docker compose do ambiente de desenvolvimento com devcontainers
+# O banco de dados é levantado juntamente com o ambiente de desenvolvimento
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ..:/app:cached
+    ports:
+      - "8000:8000" # Porta da API
+    networks:
+      - api-bot
+networks:
+  api-bot:
+    name: api-bot-devcontainers
+    driver: bridge

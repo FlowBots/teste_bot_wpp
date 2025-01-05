@@ -1,0 +1,12 @@
+FROM python:3.12.6-slim-bullseye
+RUN apt-get update 
+RUN apt-get install -y git
+RUN apt-get install -y git-flow
+RUN apt-get install -y curl
+RUN apt-get install -y wget
+#RUN apt-get install black
+RUN curl -sSL https://install.python-poetry.org | python3 -
+ENV PATH="/root/.local/bin:$PATH"
+    #USER python
+WORKDIR /app
+CMD ["tail", "-f", "/dev/null"]
