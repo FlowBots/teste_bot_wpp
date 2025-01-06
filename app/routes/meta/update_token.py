@@ -6,7 +6,9 @@ import logging
 router = APIRouter()
 
 # Endpoint para renovar o token de acesso
-@router.get("/update-token")
+@router.get("/update-token", tags=["Meta"],
+    summary="Atualização de Token",
+    description="Atualiza e retorna novo Token de acesso",)
 def update_token():
     global ACCESS_TOKEN
     update_access_token()

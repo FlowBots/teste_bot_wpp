@@ -5,7 +5,9 @@ import logging
 
 router = APIRouter()
 
-@router.post("/send-message-template")
+@router.post("/send-message-template", tags=["Messages"],
+    summary="Envia Template Hello World",
+    description="Faz envio ao destinatário de uma mensagem template padrão Heloo World",)
 def send_instant_message_template(request: InstantMessageRequest):
     try:
         response = send_message_template(request.recipient, request.message)

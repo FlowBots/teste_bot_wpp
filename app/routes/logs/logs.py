@@ -18,7 +18,9 @@ logging.info("Logging configurado.")
 
 logging.basicConfig(level=logging.INFO)
 
-@router.get("/logs", status_code=200)
+@router.get("/logs", status_code=200, tags=["Logs"],
+    summary="Logs dos Endpoints",
+    description="Retorna os logs armazenados no arquivo com filtros opcionais.",)
 def get_logs(
     level: str = Query("INFO", description="Nível do log (INFO, ERROR, DEBUG, etc.)"),
     keyword: str = Query(
