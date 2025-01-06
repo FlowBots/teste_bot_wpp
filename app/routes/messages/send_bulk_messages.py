@@ -8,7 +8,7 @@ from app.services.send_message_template import send_message_template
 
 router = APIRouter()
 
-@router.post("/messages/bulk", status_code=200, tags=["Messages"],
+@router.post("/send-message/bulk", status_code=200, tags=["Messages"],
     summary="Envio de mensagem em massa",
     description="Envia mensagens em massa para múltiplos destinatários.")
 def send_bulk_messages(request: BulkMessageRequest):

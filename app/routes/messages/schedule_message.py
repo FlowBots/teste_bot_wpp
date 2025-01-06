@@ -9,7 +9,7 @@ import uuid
 router = APIRouter()
 
 # Endpoint para agendamento
-@router.post("/schedule-message", status_code=201, tags=["Messages"],
+@router.post("/schedule/message", status_code=201, tags=["Messages"],
     summary="Agendar mensagem",
     description="Faz o agendamento de mensagem por data e hora e destino",)
 def schedule_message(
