@@ -6,7 +6,7 @@ from app.routes.logs import *
 from app.routes.messages import *
 from app.routes.meta import *
 
-#from app.routes import manage_templates, list_templates, check_user_status # ROTAS em desenvolvimento
+from app.routes import manage_templates, list_templates, check_user_status # ROTAS em desenvolvimento
 
 app = FastAPI(title="Chatbot WhatsApp Scheduler")
 
