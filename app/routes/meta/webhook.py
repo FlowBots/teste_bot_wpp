@@ -7,7 +7,9 @@ import requests
 router = APIRouter()
 
 # Endpoint para validação inicial do webhook (GET)
-@router.get("/webhook")
+@router.get("/webhook", tags=["Meta"],
+    summary="Validação inicial do webhook",
+    description="Endpoint para validação inicial do webhook (GET)",)
 async def validate_webhook(request: Request):
     params = request.query_params
     logging.info(f"Webhook recebido - Parâmetros: {params}")
@@ -29,7 +31,9 @@ async def validate_webhook(request: Request):
         return {"error": "Token de verificação inválido"}
 
 # Endpoint para receber notificações (POST)
-@router.post("/webhook")
+@router.post("/webhook", tags=["Meta"],
+    summary="Receber notificações - webhook",
+    description="Endpoint para receber notificações (POST)",)
 async def receive_webhook(request: Request):
     try:
         payload = await request.json()
