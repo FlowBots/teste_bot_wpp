@@ -14,8 +14,10 @@ class TemplateMessageRequest(BaseModel):
     recipient: str  # Número do destinatário no formato E.164
 
 
-@router.post("/send-hello-world")
-def send_message_template(request: TemplateMessageRequest):
+@router.post("/send-hello-world", tags=["Messages"],
+    summary="Envia Template Hello World",
+    description="Faz envio ao destinatário de uma mensagem template padrão Heloo World",)
+def send_hello_word(request: TemplateMessageRequest):
     headers = {
         "Authorization": f"Bearer {ACCESS_TOKEN}",
         "Content-Type": "application/json",

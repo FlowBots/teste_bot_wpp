@@ -26,6 +26,7 @@ app.include_router(send_instant_message_router)
 app.include_router(send_template_message_router)
 app.include_router(update_token_router)
 app.include_router(webhook_router)
+app.include_router(send_hello_word_router)
 
 @app.on_event("shutdown")
 def shutdown():
