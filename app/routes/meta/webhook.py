@@ -6,9 +6,8 @@ import requests
 
 router = APIRouter()
 
-@router.get("/webhook", tags=["Meta"],
-    summary="Verificação de Token interno",
-    description="Retorna os os parâmetros necessários para utilização da API da Meta.",)
+# Endpoint para validação inicial do webhook (GET)
+@router.get("/webhook")
 async def validate_webhook(request: Request):
     params = request.query_params
     logging.info(f"Webhook recebido - Parâmetros: {params}")
@@ -28,3 +27,18 @@ async def validate_webhook(request: Request):
     else:
         logging.warning("Falha ao validar o webhook. Token de verificação inválido.")
         return {"error": "Token de verificação inválido"}
+
+# Endpoint para receber notificações (POST)
+@router.post("/webhook")
+async def receive_webhook(request: Request):
+    try:
+        payload = await request.json()
+        logging.info(f"Payload recebido no webhook: {payload}")
+
+        # Aqui você pode processar os eventos recebidos
+        # Exemplo: Verificar se a mensagem é de um novo cliente, se foi entregue, etc.
+
+        return {"status": "Webhook processado com sucesso"}
+    except Exception as e:
+        logging.error(f"Erro ao processar o webhook: {str(e)}")
+        return {"error": "Erro ao processar o webhook"}

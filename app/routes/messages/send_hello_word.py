@@ -1,25 +1,21 @@
 from fastapi import APIRouter, HTTPException
-from app.models.InstantMessageRequest import InstantMessageRequest
-#from app.services.send_message_template import send_message_template
-import logging
-import requests
 from pydantic import BaseModel
+import requests
+import logging
 
+# Configurações
 from app.config import ACCESS_TOKEN, WHATSAPP_API_URL
 
 router = APIRouter()
 
+
 # Modelo de requisição # MANDAR PARA A PASTA MODELS!!!!
-class TemplateRequest(BaseModel):
+class TemplateMessageRequest(BaseModel):
     recipient: str  # Número do destinatário no formato E.164
 
-@router.post("/send-starter-agent", tags=["Messages"],
-    summary="Envia Template Hello World",
-    description="Faz envio ao destinatário de uma mensagem template padrão Heloo World",)
-def send_message_template(request: TemplateRequest):
-    """
-    Endpoint para enviar o template `starter_agent` sem variáveis.
-    """
+
+@router.post("/send-hello-world")
+def send_message_template(request: TemplateMessageRequest):
     headers = {
         "Authorization": f"Bearer {ACCESS_TOKEN}",
         "Content-Type": "application/json",
@@ -29,8 +25,8 @@ def send_message_template(request: TemplateRequest):
         "to": request.recipient,
         "type": "template",
         "template": {
-            "name": "starter_agent",  # Nome do template
-            "language": {"code": "pt_BR"},  # Idioma configurado no template
+            "name": "hello_world",  # Nome do template padrão do WhatsApp
+            "language": {"code": "en_US"},  # Idioma configurado para o hello_world
         },
     }
 
