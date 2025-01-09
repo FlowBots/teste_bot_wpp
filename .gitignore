@@ -1,4 +1,5 @@
 jobs.DATABASE_URL
+jobs.db
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
