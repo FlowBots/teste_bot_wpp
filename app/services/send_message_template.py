@@ -3,11 +3,10 @@ import requests
 import logging
 from app.config import WHATSAPP_API_URL, ACCESS_TOKEN
 
+
 # Função Simulada de Envio de Mensagem
-def send_message_template(recipient: str):
-    logging.info(
-        f"Iniciando envio de mensagem para o destinatário: {recipient}"
-    )
+def send_starter_agent_template(recipient: str):
+    logging.info(f"Iniciando envio de mensagem para o destinatário: {recipient}")
 
     headers = {
         "Authorization": f"Bearer {ACCESS_TOKEN}",

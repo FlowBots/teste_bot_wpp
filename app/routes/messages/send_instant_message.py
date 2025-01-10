@@ -3,15 +3,20 @@ from app.models.InstantMessageRequest import InstantMessageRequest
 from app.services.send_message_instant import send_message_instant
 import logging
 
-# importando a função send_message_template para erro de janela de 24h
-from app.services.send_message_template import send_message_template
+# importando a função send_starter_agent_template para erro de janela de 24h
+from app.routes.messages.send_starter_agent_template import send_starter_agent_template
 
 router = APIRouter()
 
+
 # Endpoint para envio instantâneo de mensagens
-@router.post("/send-message/instant", status_code=200, tags=["Messages"],
+@router.post(
+    "/send-message/instant",
+    status_code=200,
+    tags=["Messages"],
     summary="Envio de mensagem instantânea",
-    description="Faz o envio de mensagem customizada no instante que faz o POST",)
+    description="Faz o envio de mensagem customizada no instante que faz o POST",
+)
 def send_instant_message(request: InstantMessageRequest):
     try:
         response = send_message_instant(request.recipient, request.message)
@@ -29,7 +34,7 @@ def send_instant_message(request: InstantMessageRequest):
             )
             try:
                 # Envia um template de mensagem
-                template_response = send_message_template(
+                template_response = send_starter_agent_template(
                     recipient=request.recipient,
                     template_name="starter_agent",  # Nome do template aprovado
                     variables=["nath"],  # Variáveis para o template
