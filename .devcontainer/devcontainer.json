@@ -23,14 +23,20 @@
 	"postCreateCommand": "poetry install && poetry run uvicorn __main:app --host 0.0.0.0 --port 8000 --reload",
 	"customizations": {
 		"vscode": {
-			"extensions": [ //* EXTENSOES DO VSCODE
+			"extensions": [
 				"ms-azuretools.vscode-docker",
 				"ms-python.black-formatter",
 				"ms-python.python",
 				"usernamehw.errorlens",
 				"christian-kohler.path-intellisense",
 				"aaron-bond.better-comments",
-				"github.copilot"
+				"github.copilot",
+				"Gruntfuggly.todo-tree",
+				"alefragnani.Bookmarks",
+				"GitHub.copilot",
+				"GitHub.copilot-chat",
+				"ms-python.vscode-pylance",
+				"redhat.vscode-yaml"
 			]
 		}
 	}
