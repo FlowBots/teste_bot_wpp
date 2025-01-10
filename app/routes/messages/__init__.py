@@ -12,7 +12,7 @@ from .schedule_recurring import router as schedule_recurring_router
 from .send_bulk_messages import router as send_bulk_messages_router
 from .send_instant_message import router as send_instant_message_router
 from .send_template_message import router as send_template_message_router
-from .send_hello_word import router as send_hello_word_router
+from .send_hello_word_message import router as send_hello_word_message_router
 
 __all__ = [
     "cancel_scheduled_message_router",
@@ -22,5 +22,5 @@ __all__ = [
     "send_bulk_messages_router",
     "send_instant_message_router",
     "send_template_message_router",
-    "send_hello_word_router",
+    "send_hello_word_message_router",
 ]

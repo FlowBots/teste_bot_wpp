@@ -1,19 +1,19 @@
 from fastapi import APIRouter, HTTPException
 from app.models.TemplateMessageRequest import TemplateMessageRequest
-from app.services.send_message_template import send_message_template
+from app.services.send_message_hello_word import send_message_hello_word
 import logging
 
 router = APIRouter()
 
-@router.post("/send-starter-agent", tags=["Messages"],
-    summary="Envia Template starter_agent",
-    description="Faz envio ao destinatário de uma mensagem template starter_agent para poder começar a conversa",)
-def send_message_template(request: TemplateMessageRequest):
+@router.post("/send-hello-world", tags=["Messages"],
+    summary="Envia Template Hello World",
+    description="Faz envio ao destinatário de uma mensagem template padrão Heloo World",)
+def send_hello_word(request: TemplateMessageRequest):
     """
-    Endpoint para enviar o template `starter_agent` sem variáveis.
+    Endpoint para enviar o template Hello World sem variáveis.
     """
     try:
-        response = send_message_template(request.recipient)
+        response = send_message_hello_word(request.recipient)
         logging.info(
             f"Mensagem Hello World enviada com sucesso para {request.recipient}."
         )

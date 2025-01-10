@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from app.scheduler import scheduler
 from apscheduler.triggers.interval import IntervalTrigger
-from app.services.send_message_template import send_message_template
+from app.services.send_message_instant import send_message_instant
 from app.models.RecurringScheduleRequest import RecurringScheduleRequest
 import logging
 import uuid
@@ -32,7 +32,7 @@ def schedule_recurring_message(request: RecurringScheduleRequest):
 
     try:
         scheduler.add_job(
-            send_message_template,
+            send_message_instant,
             trigger=IntervalTrigger(start_date=start_time, end_date=request.end_time, **trigger_args),
             id=schedule_id,
             kwargs={

@@ -1,10 +1,10 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 import requests
 from app.config import WHATSAPP_API_URL, ACCESS_TOKEN
 from app.models.BulkMessageRequest import BulkMessageRequest
 import logging
 
-from app.services.send_message_template import send_message_template
+from app.services.send_message_instant import send_message_instant
 
 router = APIRouter()
 
@@ -23,7 +23,7 @@ def send_bulk_messages(request: BulkMessageRequest):
 
     for recipient in request.recipients:
         try:
-            response = send_message_template(recipient, request.message)
+            response = send_message_instant(recipient, request.message)
             logging.info(f"Mensagem enviada com sucesso para {recipient}")
             successful_recipients.append(recipient)
         except requests.exceptions.RequestException as e:

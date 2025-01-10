@@ -19,7 +19,7 @@ app.include_router(list_scheduled_messages_router)
 app.include_router(schedule_message_router)
 app.include_router(schedule_recurring_router) # FUNCIONAMENTO OK PORÉM AINDA PRECISA MAIS TESTES, NO MOMENTO PARA TESTES MANDA HELLO WORLD!!
 app.include_router(send_bulk_messages_router) # FUNCIONAMENTO OK, NO MOMENTO PARA TESTES MANDA HELLO WORLD!!
-app.include_router(send_hello_word_router)
+app.include_router(send_hello_word_message_router)
 app.include_router(send_instant_message_router)
 app.include_router(send_template_message_router)
 

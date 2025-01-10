@@ -21,9 +21,6 @@ def send_instant_message(request: InstantMessageRequest):
         return {"status": "success", "response": response}
     except Exception as e:
         logging.error(f"Erro ao enviar mensagem instantânea: {str(e)}")
-        # raise HTTPException(
-        #     status_code=500, detail="Erro ao enviar mensagem instantânea"
-        # )
 
         #! Detecta erro de janela de 24 horas e tenta envia um template
         if "24 hours have passed" in str(e):

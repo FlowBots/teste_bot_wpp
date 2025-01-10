@@ -4,7 +4,7 @@ import logging
 from app.config import WHATSAPP_API_URL, ACCESS_TOKEN
 
 # Função Simulada de Envio de Mensagem
-def send_message_template(recipient: str):
+def send_message_hello_word(recipient: str):
     logging.info(
         f"Iniciando envio de mensagem para o destinatário: {recipient}"
     )
@@ -18,13 +18,9 @@ def send_message_template(recipient: str):
         "to": recipient,
         "type": "template",
         "template": {
-            "name": "starter_agent",  # Nome do template
-            "language": {"code": "pt_BR"},  # Idioma configurado no template
-        },
+            "name": "hello_world", "language": { "code": "en_US" }
+        }
     }
-
-    # Log do payload para depuração
-    logging.info(f"Payload enviado para o WhatsApp: {payload}")
 
     try:
         response = requests.post(WHATSAPP_API_URL, json=payload, headers=headers)
