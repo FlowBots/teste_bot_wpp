@@ -1,6 +1,7 @@
+from fastapi import HTTPException
+from app.config import WHATSAPP_API_URL, ACCESS_TOKEN
 import requests
 import logging
-from app.config import WHATSAPP_API_URL, ACCESS_TOKEN
 
 # Função Simulada de Envio de Mensagem
 def send_message_instant(recipient: str, message: str):

@@ -1,6 +1,7 @@
+from fastapi import HTTPException
+from app.config import WHATSAPP_API_URL, ACCESS_TOKEN
 import requests
 import logging
-from app.config import WHATSAPP_API_URL, ACCESS_TOKEN
 
 # Função Simulada de Envio de Mensagem Agendada
 def send_message_scheduled(job_id: str, recipient: str, message: str):
