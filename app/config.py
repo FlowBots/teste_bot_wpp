@@ -28,6 +28,7 @@ ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
 APP_ID = os.getenv("APP_ID")
 APP_SECRET = os.getenv("APP_SECRET")
 VERIFY_TOKEN = os.getenv("VERIFY_TOKEN")
+WHATSAPP_API_URL_GLOBAL = os.getenv("WHATSAPP_API_URL_GLOBAL")
 
 # Verificação de variáveis de ambiente obrigatórias
 if not all([ACCESS_TOKEN, APP_ID, VERIFY_TOKEN]):

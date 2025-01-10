@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, HTTPException
 import requests
-from app.config import WHATSAPP_API_URL, ACCESS_TOKEN
+from app.config import WHATSAPP_API_URL, ACCESS_TOKEN, WHATSAPP_API_URL_GLOBAL
 import logging
 
 router = APIRouter()
@@ -14,18 +14,21 @@ def list_templates():
     """
     logging.info("Solicitando lista de templates disponíveis.")
     
-    url = f"{WHATSAPP_API_URL}/v14.0/{ACCESS_TOKEN}/message_templates"
+    url = f"{WHATSAPP_API_URL_GLOBAL}message_templates"
     headers = {
         "Authorization": f"Bearer {ACCESS_TOKEN}",
         "Content-Type": "application/json",
     }
     
+    payload = {}
+
     try:
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, data=payload)
         response.raise_for_status()
         templates = response.json().get("data", [])
         
         logging.info(f"{len(templates)} templates encontrados.")
+        logging.info(f"Response: {response.json()}")
         return {"status": "success", "templates": templates}
     except requests.exceptions.RequestException as e:
         logging.error(f"Erro ao listar templates: {str(e)}")
